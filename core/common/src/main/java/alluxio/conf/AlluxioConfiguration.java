@@ -51,7 +51,11 @@ public interface AlluxioConfiguration {
    * @return the value
    */
   default <T> T getOrDefault(PropertyKey key, T defaultValue) {
-    return isSet(key) ? (T) get(key) : defaultValue;
+    if (isSet(key)) {
+      return (T) get(key);
+    }
+    ConfTracker.trackConfig(key, defaultValue, false);
+    return defaultValue;
   }
 
   /**
@@ -62,7 +66,11 @@ public interface AlluxioConfiguration {
    */
   default Object getOrDefault(PropertyKey key, Object defaultValue,
       ConfigurationValueOptions options) {
-    return isSet(key) ? get(key, options) : defaultValue;
+    if (isSet(key)) {
+      return get(key, options);
+    }
+    ConfTracker.trackConfig(key, defaultValue, false);
+    return defaultValue;
   }
 
   /**

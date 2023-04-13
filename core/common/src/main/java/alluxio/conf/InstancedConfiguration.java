@@ -136,6 +136,8 @@ public class InstancedConfiguration implements AlluxioConfiguration {
               displayType.name(), key.getName()));
       }
     }
+    // TODO: only track once here
+    ConfTracker.trackConfig(key, value, false);
     return value;
   }
 
@@ -149,8 +151,9 @@ public class InstancedConfiguration implements AlluxioConfiguration {
       // Lookup to resolve any key before simply returning isSet. An exception will be thrown if
       // the key can't be resolved or if a lower level value isn't set.
       if (value instanceof String) {
-        lookup(key, (String) value);
+        value = lookup(key, (String) value);
       }
+      ConfTracker.trackConfig(key, value, false);
     } catch (UnresolvablePropertyException e) {
       return false;
     }
@@ -344,6 +347,7 @@ public class InstancedConfiguration implements AlluxioConfiguration {
     for (Map.Entry<PropertyKey, Object> entry: mProperties.entrySet()) {
       String key = entry.getKey().getName();
       if (prefixKey.isNested(key)) {
+        ConfTracker.trackConfig(key, entry.getValue(), false);
         String suffixKey = key.substring(prefixKey.length() + 1);
         ret.put(suffixKey, entry.getValue());
       }

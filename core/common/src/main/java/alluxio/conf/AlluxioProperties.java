@@ -83,10 +83,14 @@ public class AlluxioProperties {
   @Nullable
   public Object get(PropertyKey key) {
     if (mUserProps.containsKey(key)) {
-      return mUserProps.get(key).orElse(null);
+      Object val = mUserProps.get(key).orElse(null);
+      ConfTracker.trackConfig(key, val, false);
+      return val;
     }
     // In case key is not the reference to the original key
-    return PropertyKey.fromString(key.toString()).getDefaultValue();
+    Object val = PropertyKey.fromString(key.toString()).getDefaultValue();
+    ConfTracker.trackConfig(key, val, false);
+    return val;
   }
 
   /**
@@ -105,6 +109,15 @@ public class AlluxioProperties {
    * @param source the source of this value for the key
    */
   public void put(PropertyKey key, Object value, Source source) {
+    if (!mUserProps.containsKey(key) || source.compareTo(getSource(key)) >= 0) {
+      ConfTracker.trackConfig(key, value, true);
+      mUserProps.put(key, Optional.ofNullable(value));
+      mSources.put(key, source);
+      mHash.markOutdated();
+    }
+  }
+
+  public void put_purged(PropertyKey key, Object value, Source source) {
     if (!mUserProps.containsKey(key) || source.compareTo(getSource(key)) >= 0) {
       mUserProps.put(key, Optional.ofNullable(value));
       mSources.put(key, source);
@@ -150,7 +163,7 @@ public class AlluxioProperties {
         // is made dynamic
         propertyKey = PropertyKey.getOrBuildCustom(key);
       }
-      put(propertyKey, propertyKey.parseValue(value), source);
+      put_purged(propertyKey, propertyKey.parseValue(value), source);
     }
     mHash.markOutdated();
   }
@@ -179,11 +192,14 @@ public class AlluxioProperties {
     if (mUserProps.containsKey(key)) {
       Optional<Object> val = mUserProps.get(key);
       if (val.isPresent()) {
+        ConfTracker.trackConfig(key, val.get(), false);
         return true;
       }
     }
     // In case key is not the reference to the original key
-    return PropertyKey.fromString(key.toString()).getDefaultValue() != null;
+    Object val = PropertyKey.fromString(key.toString()).getDefaultValue();
+    ConfTracker.trackConfig(key, val, false);
+    return val != null;
   }
 
   /**
@@ -194,6 +210,7 @@ public class AlluxioProperties {
   public boolean isSetByUser(PropertyKey key) {
     if (mUserProps.containsKey(key)) {
       Optional<Object> val = mUserProps.get(key);
+      ConfTracker.trackConfig(key, val, false);
       // Sources larger than Source.CLUSTER_DEFAULT are considered to be set by the user
       return val.isPresent() && (getSource(key).compareTo(Source.CLUSTER_DEFAULT) > 0);
     }

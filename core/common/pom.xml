@@ -151,6 +151,19 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>edu.illinois.confuzz</groupId>
+      <artifactId>confuzz-guidance</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <!-- JUnit-QuickCheck: API to write generators -->
+    <dependency>
+      <groupId>com.pholser</groupId>
+      <artifactId>junit-quickcheck-generators</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

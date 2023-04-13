@@ -163,7 +163,7 @@ public final class SpecificPathConfiguration implements AlluxioConfiguration {
     AlluxioProperties properties = mClusterConf.copyProperties();
     for (PropertyKey key : keySet()) {
       mPathConf.getConfiguration(mPath, key).ifPresent(
-          config -> properties.put(key, config.get(key), Source.PATH_DEFAULT));
+          config -> properties.put_purged(key, config.get(key), Source.PATH_DEFAULT));
     }
     return properties;
   }
