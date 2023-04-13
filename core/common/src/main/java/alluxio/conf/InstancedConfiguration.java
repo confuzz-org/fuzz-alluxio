@@ -347,7 +347,7 @@ public class InstancedConfiguration implements AlluxioConfiguration {
     for (Map.Entry<PropertyKey, Object> entry: mProperties.entrySet()) {
       String key = entry.getKey().getName();
       if (prefixKey.isNested(key)) {
-        ConfTracker.trackConfig(key, entry.getValue(), false);
+        ConfTracker.trackConfig(entry.getKey(), entry.getValue(), false);
         String suffixKey = key.substring(prefixKey.length() + 1);
         ret.put(suffixKey, entry.getValue());
       }

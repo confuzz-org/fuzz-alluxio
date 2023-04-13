@@ -66,14 +66,31 @@ public class AlluxioProperties {
   /**
    * Constructs a new instance of Alluxio properties.
    */
-  public AlluxioProperties() {}
+  public AlluxioProperties() {
+    this(ConfigurationGenerator.getGeneratedConf());
+  }
 
   /**
    * @param alluxioProperties properties to copy
    */
   public AlluxioProperties(AlluxioProperties alluxioProperties) {
-    mUserProps.putAll(alluxioProperties.mUserProps);
-    mSources.putAll(alluxioProperties.mSources);
+    if (alluxioProperties != null) {
+      mUserProps.putAll(alluxioProperties.mUserProps);
+      mSources.putAll(alluxioProperties.mSources);
+    }
+  }
+
+  public AlluxioProperties(Map<String, Object> injectedConf) throws IllegalArgumentException {
+    for (Map.Entry<String, Object> entry: injectedConf.entrySet()) {
+      PropertyKey key = PropertyKey.getOrBuildCustom(entry.getKey());
+      Object value = entry.getValue();
+      if (key.validateValue(value)) {
+        put_purged(key, value, Source.RUNTIME);
+      } else {
+        throw new IllegalArgumentException("Cannot validate value " + value +
+                " for " + key.getName() + " with type " + key.getType());
+      }
+    }
   }
 
   /**
