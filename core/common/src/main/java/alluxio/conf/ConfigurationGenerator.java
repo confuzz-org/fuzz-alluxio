@@ -11,15 +11,15 @@
 
 package alluxio.conf;
 
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
+import java.util.Map;
+
 import com.pholser.junit.quickcheck.generator.GenerationStatus;
 import com.pholser.junit.quickcheck.generator.Generator;
 import com.pholser.junit.quickcheck.random.SourceOfRandomness;
 import edu.illinois.confuzz.internal.ConfigTracker;
 import edu.illinois.confuzz.internal.ConfuzzGenerator;
+import org.junit.AssumptionViolatedException;
 
-import java.io.IOException;
-import java.util.Map;
 
 public class ConfigurationGenerator extends Generator<AlluxioProperties>{
     private static AlluxioProperties generatedConf = null;
@@ -51,7 +51,7 @@ public class ConfigurationGenerator extends Generator<AlluxioProperties>{
 
     public static AlluxioProperties generate(SourceOfRandomness random) throws IllegalArgumentException {
         Map<String, Object> confMap = ConfuzzGenerator.generate(random);
-        generatedConf = new AlluxioProperties();
+        generatedConf = new AlluxioProperties(null);
         for (Map.Entry<String, Object> entry: confMap.entrySet()) {
             PropertyKey key = (PropertyKey) ConfigTracker.getConfigKey(entry.getKey());
             Object value = entry.getValue();
@@ -63,6 +63,13 @@ public class ConfigurationGenerator extends Generator<AlluxioProperties>{
                 throw new IllegalArgumentException("Cannot validate value " + value +
                         " for " + key.getName() + " with type " + key.getType());
             }
+        }
+        try {
+            Configuration.reloadProperties();
+        } catch (NoClassDefFoundError e) {
+            // pass
+        } catch (RuntimeException e) {
+            throw new AssumptionViolatedException(e.getMessage());
         }
         return generatedConf;
     }
