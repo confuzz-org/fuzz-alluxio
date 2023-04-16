@@ -100,7 +100,7 @@ public final class Configuration
    * its priority is higher or equal than the existing one.
    *
    * @param properties the source {@link Properties} to be merged
-   * @param source the source of the the properties (e.g., system property, default and etc)
+   * @param source the source of the properties (e.g., system property, default and etc)
    */
   public static void merge(Map<?, ?> properties, Source source) {
     SERVER_CONFIG_REFERENCE.get().merge(properties, source);
@@ -129,6 +129,13 @@ public final class Configuration
       value = String.valueOf(value);
     }
     SERVER_CONFIG_REFERENCE.get().set(key, value, source);
+  }
+
+  public static void set_purged(PropertyKey key, Object value, Source source) {
+    if (key.getType() == PropertyKey.PropertyType.STRING) {
+      value = String.valueOf(value);
+    }
+    SERVER_CONFIG_REFERENCE.get().set_purged(key, value, source);
   }
 
   /**
@@ -614,6 +621,23 @@ public final class Configuration
           Optional<Properties> properties = loadProperties(stream);
           if (properties.isPresent()) {
             alluxioProperties.merge(properties.get(), Source.siteProperty(resource.getPath()));
+            conf = new InstancedConfiguration(alluxioProperties);
+            conf.validate();
+            SERVER_CONFIG_REFERENCE.set(conf);
+          }
+        } catch (IOException e) {
+          LOG.warn("Failed to read properties from {}: {}", resource, e.toString());
+        }
+      }
+    } else {
+      // Load CTEST config from resource
+      URL resource = ConfigurationUtils.class.getClassLoader().getResource(Constants.CTEST_PROPERTIES);
+      if (resource != null) {
+        try (InputStream stream = resource.openStream()) {
+          Optional<Properties> properties = loadProperties(stream);
+          if (properties.isPresent()) {
+            // TODO: Might consider changing this runtime source
+            alluxioProperties.merge(properties.get(), Source.RUNTIME);
             conf = new InstancedConfiguration(alluxioProperties);
             conf.validate();
             SERVER_CONFIG_REFERENCE.set(conf);

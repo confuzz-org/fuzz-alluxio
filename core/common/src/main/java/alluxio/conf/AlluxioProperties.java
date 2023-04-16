@@ -80,19 +80,6 @@ public class AlluxioProperties {
     }
   }
 
-  public AlluxioProperties(Map<String, Object> injectedConf) throws IllegalArgumentException {
-    for (Map.Entry<String, Object> entry: injectedConf.entrySet()) {
-      PropertyKey key = PropertyKey.getOrBuildCustom(entry.getKey());
-      Object value = entry.getValue();
-      if (key.validateValue(value)) {
-        put_purged(key, value, Source.RUNTIME);
-      } else {
-        throw new IllegalArgumentException("Cannot validate value " + value +
-                " for " + key.getName() + " with type " + key.getType());
-      }
-    }
-  }
-
   /**
    * @param key the key to query
    * @return the value, or null if the key has no value set

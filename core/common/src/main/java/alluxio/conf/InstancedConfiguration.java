@@ -224,6 +224,16 @@ public class InstancedConfiguration implements AlluxioConfiguration {
     mProperties.put(key, value, source);
   }
 
+  public void set_purged(@Nonnull PropertyKey key, @Nonnull Object value, @Nonnull Source source) {
+    checkArgument(!value.equals(""),
+            "The key \"%s\" cannot be have an empty string as a value. Use "
+                    + "Configuration.unset to remove a key from the configuration.", key);
+    checkArgument(key.validateValue(value),
+            "Invalid value for property key %s: %s", key, value);
+    value = key.formatValue(value);
+    mProperties.put_purged(key, value, source);
+  }
+
   /**
    * Unsets the value for the appropriate key in the {@link Properties}. If the {@link PropertyKey}
    * has a default value, it will still be considered set after executing this method.
