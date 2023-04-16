@@ -19,22 +19,37 @@ import java.util.Optional;
 
 public class ConfTracker {
     private static final Logger LOG = LoggerFactory.getLogger(ConfTracker.class);
+    private static final boolean ctestLogEnabled = Boolean.getBoolean("ctest.log");
     public static void trackConfig(PropertyKey key, Optional<Object> value, boolean isSet) {
         trackConfig(key, value.orElse(null), isSet);
     }
 
     public static void trackConfig(PropertyKey key, Object value, boolean isSet) {
-        trackConfig(key.getName(), value, isSet);
+        trackConfig(key.getName(), key, value, isSet);
     }
 
-    public static void trackConfig(String key, Object value, boolean isSet) {
-        if (value == null) {
-            ConfigTracker.track(key, null, isSet);
-        } else if ((value instanceof String)||(value instanceof Boolean)) {
-            ConfigTracker.track(key, String.valueOf(value), isSet);
-        } else {
-            LOG.error("[CTEST] Cannot track config " + key + " of class " + value.getClass().getName()
-                    + " with value " + value);
+    public static void trackConfig(String name, PropertyKey key, Object value, boolean isSet) {
+        if (ctestLogEnabled) {
+            if (isSet) {
+                LOG.warn("[CTEST][SET-PARAM] " + key + " = " + value + " " + getStackTrace()); //CTEST
+            } else {
+                LOG.warn("[CTEST][GET-PARAM] " + key + " = " + value + " " + getStackTrace()); //CTEST
+            }
         }
+        if (isSet) {
+            ConfigTracker.trackSet(name, key, value);
+        } else {
+            ConfigTracker.trackGet(name, key, value);
+        }
+    }
+
+    private static String getStackTrace() {
+        String stacktrace = " ";
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            if (element.getClassName().contains("Test")) {
+                stacktrace = stacktrace.concat(element + "\t");
+            }
+        }
+        return stacktrace;
     }
 }

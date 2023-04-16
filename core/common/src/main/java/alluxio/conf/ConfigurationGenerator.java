@@ -41,7 +41,8 @@ public class ConfigurationGenerator extends Generator<AlluxioProperties>{
      * @return
      */
     @Override
-    public AlluxioProperties generate(SourceOfRandomness random, GenerationStatus generationStatus) throws IllegalArgumentException {
+    public AlluxioProperties generate(SourceOfRandomness random, GenerationStatus generationStatus)
+            throws IllegalArgumentException {
         return generate(random);
     }
 
