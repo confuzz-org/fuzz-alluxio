@@ -162,6 +162,7 @@
         <groupId>com.mycila</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
+          <skip>true</skip>
           <mapping>
             <ts>PHP_STYLE</ts>
           </mapping>

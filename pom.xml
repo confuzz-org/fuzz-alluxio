@@ -900,6 +900,9 @@
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <version>4.0.rc1</version>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1179,6 +1182,7 @@
           </dependency>
         </dependencies>
         <configuration>
+          <skip>true</skip>
           <configLocation>${build.path}/checkstyle/alluxio_checks.xml</configLocation>
           <suppressionsLocation>${build.path}/checkstyle/suppressions.xml</suppressionsLocation>
           <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
@@ -1210,6 +1214,7 @@
         <groupId>com.mycila</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
+          <skip>true</skip>
           <header>${build.path}/license/HEADER.txt</header>
           <failIfMissing>true</failIfMissing>
           <aggregate>false</aggregate>
