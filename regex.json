@@ -14,5 +14,15 @@
   {
     "name": "fake-param",
     "regex": "always|asneeded"
+  },
+  {
+    "name": "alluxio.master.embedded.journal.port",
+    "lower": 0,
+    "upper": 65535
+  },
+  {
+    "name": "alluxio.master.throttle.active.heap.used.ratio",
+    "lower": 0,
+    "upper": 1
   }
 ]
