@@ -55,14 +55,9 @@ public class ConfigurationGenerator extends Generator<AlluxioProperties>{
         for (Map.Entry<String, Object> entry: confMap.entrySet()) {
             PropertyKey key = (PropertyKey) ConfigTracker.getConfigKey(entry.getKey());
             Object value = entry.getValue();
-            if (key.validateValue(value)) {
-                // TODO: Setting as RUNTIME here might not be the best idea...
-                generatedConf.put_purged(key, value, Source.RUNTIME);
-                Configuration.set_purged(key, value, Source.RUNTIME);
-            } else {
-                throw new IllegalArgumentException("Cannot validate value " + value +
-                        " for " + key.getName() + " with type " + key.getType());
-            }
+            // TODO: Setting as RUNTIME here might not be the best idea...
+            generatedConf.put_purged(key, value, Source.RUNTIME);
+            Configuration.set_purged(key, value, Source.RUNTIME);
         }
         try {
             Configuration.reloadProperties();
