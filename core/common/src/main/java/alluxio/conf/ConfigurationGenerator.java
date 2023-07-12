@@ -56,8 +56,12 @@ public class ConfigurationGenerator extends Generator<AlluxioProperties>{
             PropertyKey key = (PropertyKey) ConfigTracker.getConfigKey(entry.getKey());
             Object value = entry.getValue();
             // TODO: Setting as RUNTIME here might not be the best idea...
-            generatedConf.put_purged(key, value, Source.RUNTIME);
-            Configuration.set_purged(key, value, Source.RUNTIME);
+            try {
+                generatedConf.put_purged(key, value, Source.RUNTIME);
+                Configuration.set_purged(key, value, Source.RUNTIME);
+            } catch (Exception e) {
+                // do nothing
+            }
         }
         try {
             Configuration.reloadProperties();
