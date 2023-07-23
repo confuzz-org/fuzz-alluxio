@@ -53,12 +53,12 @@ public class ConfigurationGenerator extends Generator<AlluxioProperties>{
         Map<String, Object> confMap = ConfuzzGenerator.generate(random);
         generatedConf = new AlluxioProperties(null);
         for (Map.Entry<String, Object> entry: confMap.entrySet()) {
-            PropertyKey key = (PropertyKey) ConfigTracker.getConfigKey(entry.getKey());
-            Object value = entry.getValue();
-            // TODO: Setting as RUNTIME here might not be the best idea...
             try {
-                generatedConf.put_purged(key, value, Source.RUNTIME);
-                Configuration.set_purged(key, value, Source.RUNTIME);
+                PropertyKey key = PropertyKey.fromString(entry.getKey());
+                Object value = entry.getValue();
+                // TODO: Setting as RUNTIME here might not be the best idea...
+                    generatedConf.put_purged(key, value, Source.RUNTIME);
+                    Configuration.set_purged(key, value, Source.RUNTIME);
             } catch (Exception e) {
                 // do nothing
             }
