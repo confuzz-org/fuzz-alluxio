@@ -10,6 +10,16 @@ import static org.junit.Assert.assertEquals;
 public class TestDebug {
 
     @Test
+    public void testECFuzzFail() {
+        AlluxioProperties config = Configuration.copyGlobal().getProperties();
+        PropertyKey debugProperty = PropertyKey.getOrBuildCustom("alluxio.fuse.debug.enabled");
+        String debug = (String) config.get(debugProperty);
+        if (debug != null && debug.equalsIgnoreCase("true")) {
+            throw new RuntimeException("Fake Bug");
+        }
+    }
+
+    @Test
     public void test() throws Exception {
         PropertyKey fake2 = PropertyKey.getOrBuildCustom("fake2");
         PropertyKey fake3 = PropertyKey.getOrBuildCustom("fake3");
