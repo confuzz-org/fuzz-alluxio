@@ -13,8 +13,8 @@ public class TestDebug {
     public void testECFuzzFail() {
         AlluxioProperties config = Configuration.copyGlobal().getProperties();
         PropertyKey debugProperty = PropertyKey.getOrBuildCustom("alluxio.fuse.debug.enabled");
-        String debug = (String) config.get(debugProperty);
-        if (debug != null && debug.equalsIgnoreCase("true")) {
+        Boolean debug = (Boolean) config.get(debugProperty);
+        if (debug != null && debug) {
             throw new RuntimeException("Fake Bug");
         }
     }
